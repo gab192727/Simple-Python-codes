@@ -1,0 +1,133 @@
+
+
+import time
+import random
+import sys
+
+def main():
+    print("Welcome to the tic-tac-toe game")
+    while True:
+        main_game()
+        play_choice = input('Do you want to play again?(y/n): ')
+        if play_choice == 'y':
+            continue
+        else:
+            sys.exit('Thank you for playing')
+
+
+def main_game():
+    p_choice = ''
+    c_choice = ''
+    boards = [' '] * 10
+    filled_fields = []
+    while True:
+        try:
+
+            player_choice = input("Choose X or O: ").upper()
+            if player_choice == 'X':
+                p_choice = 'X'
+                c_choice = 'O'
+                break
+            elif player_choice == 'O':
+                p_choice = 'O'
+                c_choice = 'X'
+                break
+            else:
+                print('Do not choose random nonsense')
+                continue
+        except ValueError:
+            continue
+    while True:
+        try:
+            move = int(input("Where do you want to move?(1-9): "))
+
+            if not 1 <= move <= 9:
+                print("Invalid Move!")
+                continue
+
+            if move in filled_fields:
+                print("Invalid move. Position already taken.")
+                continue
+
+        except ValueError:
+            continue
+
+        boards[move] = p_choice
+        filled_fields.append(move)
+        print_board(boards)
+        time.sleep(1)
+        winner = check_winner(boards)
+        if winner:
+            if winner == 'Tie':
+                print('Its a tie')
+                break
+            else:
+                print(f'player {winner} wins')
+                break
+
+        computer_choice(p_choice, c_choice, boards, filled_fields)
+        print("--------------------------------------------")
+        print("This will be my move")
+        print_board(boards)
+
+        winner = check_winner(boards)
+        if winner:
+
+            if winner == 'Tie':
+                print('Its a tie')
+                break
+            else:
+                print(f'player {winner} wins')
+                break
+
+def print_board(board):
+    print(
+        f'{board[7]} | {board[8]} | {board[9]}\n- + - + -\n{board[4]} | {board[5]} | {board[6]}\n- + - + -\n{board[1]} | {board[2]} | {board[3]}')
+
+def check_winner(board):
+    winning_combinations = [
+        (1, 2, 3), (4, 5, 6), (7, 8, 9),
+        (1, 4, 7), (2, 5, 8), (3, 6, 9),
+        (1, 5, 9), (3, 5, 7)
+    ]
+    for combo in winning_combinations:
+        if board[combo[0]] == board[combo[1]] == board[combo[2]] != ' ':
+            return board[combo[0]]
+
+    if ' ' not in board[1:]:
+        return 'Tie'
+
+    return None
+
+def computer_choice(p_choice, c_choice, boards, filled_fields):
+    for move in range(1, 10):
+        if move not in filled_fields:
+            copy_board = boards[:]
+            copy_board[move] = c_choice
+
+            if check_winner(copy_board) == c_choice:
+                filled_fields.append(move)
+                boards[move] = c_choice
+                return move
+        else:
+            continue
+    for move in range(1, 10):
+        if move not in filled_fields:
+            copy_board_2 = boards[:]
+            copy_board_2[move] = p_choice
+            if check_winner(copy_board_2) == p_choice:
+                filled_fields.append(move)
+                boards[move] = c_choice
+                return move
+    try:
+        valid_move = [move for move in range(1, 10, 2) if move not in filled_fields]
+        valid_choices = random.choice(valid_move)
+        filled_fields.append(valid_choices)
+        boards[valid_choices] = c_choice
+        return valid_choices
+    except ValueError:
+        return [move for move in range(1, 10) if move not in filled_fields]
+
+
+if __name__ == '__main__':
+    main()
